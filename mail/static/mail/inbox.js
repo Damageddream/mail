@@ -9,8 +9,33 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log(emails);
       for(let x in emails) {
         const mail = emails[x];
-        document.querySelector('#emails-view').innerHTML=`Sender: ${mail.sender} <br> Subject: ${mail.subject} <br> Time: ${mail.timestamp}`;
+        const div = document.createElement('div');
+        div.innerHTML = `Sender: ${mail.sender} Subject: ${mail.subject} Time: ${mail.timestamp} <div><button>Archive</button><button>Unarchive</button></div>`;
+        div.classList.add('line');
+        div.id = `${mail.id}`;
+        document.querySelector('#emails-view').append(div);
+        if(mail.read === true) {
+          div.classList.add('unread')
+        };
+        document.getElementById(`${mail.id}`).onclick = () => {
+          fetch(`emails/${mail.id}`)
+          .then(response => response.json())
+          .then(email => {
+            console.log(email);
+            document.querySelector('#mail').innerHTML='';
+            show_mail();
+            const divMail = document.createElement('div');
+            divMail.innerHTML = `Sender: ${email.sender}<br>Recepient: ${email.recipients}<br>Subject: ${email.subject}<br> Email: ${email.body}<br>Date:${email.timestamp}`;
+            document.querySelector('#mail').append(divMail);
+            fetch(`/emails/${email.id}`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                read: true
+              })
+            })
+          })
 
+        }
       }
     
     })  
@@ -49,6 +74,7 @@ function compose_email() {
 
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#mail').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
   // Clear out composition fields
@@ -61,7 +87,15 @@ function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
+  document.querySelector('#mail').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 }
+
+function show_mail() {
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#mail').style.display = 'block';
+  document.querySelector('#compose-view').style.display = 'none';
+}
+
