@@ -1,3 +1,26 @@
+
+@keyframes hide {
+    0% {
+        opacity: 1;
+        height: 100%;
+        line-height: 100%;
+
+    }
+    75% {
+        opacity: 0;
+        height: 100%;
+        line-height: 100%;
+
+    }
+    100% {
+        opacity: 0;
+        height: 0px;
+        line-height: 0px;
+
+    }
+}
+
+
 textarea {
     min-height: 400px;
 }
@@ -7,5 +30,13 @@ textarea {
 }
 
 .unread {
-    background-color: gray;
+    background-color: rgb(226, 221, 221);
 }
+
+.a-hide {
+    animation-name: hide;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+

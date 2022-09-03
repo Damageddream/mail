@@ -106,54 +106,62 @@ function load_content(box) {
       const div = document.createElement('div');
       const archive = document.createElement('div');
       if (box === 'sent') {
-        div.innerHTML = `Sender: ${mail.sender} Subject: ${mail.subject} Time: ${mail.timestamp}`;
+        div.innerHTML = `<b>Sender:</b> ${mail.sender} <b>Subject:</b> ${mail.subject} <b>Time:</b> ${mail.timestamp}`;
       }
       else {
         if (mail.archived === false) {
-          div.innerHTML = `Sender: ${mail.sender} Subject: ${mail.subject} Time: ${mail.timestamp}`;
+          div.innerHTML = `<b>Sender:</b> ${mail.sender} <b>Subject:</b> ${mail.subject} <b>Time:</b> ${mail.timestamp}`;
           archive.innerHTML = '<button>Archive</button>'
           archive.id = `archive_${mail.id}`;
         }
         else {
-          div.innerHTML = `Sender: ${mail.sender} Subject: ${mail.subject} Time: ${mail.timestamp}`;
+          div.innerHTML = `<b>Sender:</b> ${mail.sender} <b>Subject:</b> ${mail.subject} <b>Time:</b> ${mail.timestamp}`;
           archive.innerHTML = '<button>Unarchive</button>'
           archive.id = `unarchive_${mail.id}`;
         }
 
       }
-      console.log(archive.id)
       div.classList.add('line');
       div.id = `${mail.id}`;
-      document.querySelector('#emails-view').append(div);
-      document.querySelector('#emails-view').append(archive);
+      const hid = document.createElement('div');
+      hid.id = `hid_${mail.id}`;
+      document.querySelector('#emails-view').append(hid);
+      document.querySelector(`#hid_${mail.id}`).append(div);
+      document.querySelector(`#hid_${mail.id}`).append(archive);
 
       if (box !== 'sent') {
         if (archive.id === `archive_${mail.id}`)
         {
-          document.getElementById(`${archive.id}`).onclick = () => {
+          document.getElementById(`${archive.id}`).addEventListener('click', () => {
             fetch(`emails/${mail.id}`, {
               method: 'PUT',
               body: JSON.stringify({
                 archived: true
               })
             })
-            location.reload()
-            load_content('inbox')
-             
-          }
+            hid.classList.add('a-hide');
+            document.getElementById(`hid_${mail.id}`).style.animationPlayState = 'running';
+            document.getElementById(`hid_${mail.id}`).addEventListener('animationend', () => {
+              document.getElementById(`hid_${mail.id}`).remove();
+            }) 
+
+          });
 
         }
         else {
           document.getElementById(`${archive.id}`).onclick = () => {
-            console.log(archive.id, "hue");
             fetch(`emails/${mail.id}`, {
               method: 'PUT',
               body: JSON.stringify({
                 archived: false
               })
             })
-            location.reload()
-            load_content('inbox')
+            hid.classList.add('a-hide');
+            document.getElementById(`hid_${mail.id}`).style.animationPlayState = 'running';
+            document.getElementById(`hid_${mail.id}`).addEventListener('animationend', () => {
+            document.getElementById(`hid_${mail.id}`).remove();
+            load_content('inbox');
+            }) 
           }
                  
         }
@@ -171,7 +179,7 @@ function load_content(box) {
           show_mail();
           const divMail = document.createElement('div');
           const send = document.createElement('div');
-          divMail.innerHTML = `Sender: ${email.sender}<br>Recepient: ${email.recipients}<br>Subject: ${email.subject}<br> Email: ${email.body}<br>Date:${email.timestamp}`;
+          divMail.innerHTML = `<b>Sender:</b> ${email.sender}<br><b>Recepient:</b> ${email.recipients}<br><b>Subject:</b> ${email.subject}<br><b>Email:</b> ${email.body}<br><b>Date:</b>${email.timestamp}`;
           send.innerHTML = '<button>Reply</button>';
           send.id = `send_${email.id}`;
           document.querySelector('#mail').append(divMail);
